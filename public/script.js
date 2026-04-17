@@ -236,10 +236,93 @@ let savebookMarks = (bookmarks) => {
 }
 
 
+// Settings
+
+const settingsPanel = document.getElementById('settings')
+const settingsBtn = document.getElementById('closeSettings')
+const settingsOpen = document.getElementById('openSettings')
+
+settingsPanel.classList.add('hidden')
+
+settingsBtn.addEventListener('click', () => {
+    settingsPanel.classList.remove('visible')
+    settingsPanel.classList.add('hidden')
+})
+
+settingsOpen.addEventListener('click', () => {
+    settingsPanel.classList.remove('hidden')
+    settingsPanel.classList.add('visible')
+})
+
+
+
+const themeSettingsBtn = document.getElementById('themeSettings');
+const accountSettingsBtn = document.getElementById('accountSettings')
+
+let settingsOpener = (element) => {
+
+    const panel = element.nextElementSibling;
+    const isClosed = panel.classList.contains('max-h-0');
+
+    panel.classList.toggle('hidden')
+}
+
+themeSettingsBtn.addEventListener('click', (e) => {
+    settingsOpener(themeSettingsBtn)
+})
+
+accountSettingsBtn.addEventListener('click', (e) => {
+    settingsOpener(accountSettingsBtn)
+})
+
+
+const SettingsFname = document.getElementById('fname')
+const SettingsLname = document.getElementById('lname')
+const SettingsID = document.getElementById('settingsID')
+const SettingsZipcode = document.getElementById('zipcode')
+const SettingsAddress = document.getElementById('address')
+const SettingsInfoSubmit = document.getElementById('infosubmit')
+const SettingsInfoArray = document.getElementById('infoarray')
+
+const saveInfo = () => {
+    const inputs = SettingsInfoArray.querySelectorAll('input')
+    const info = {}
+
+    inputs.forEach(item => {
+
+        info[item.id] = item.value
+    })
+
+    const data = JSON.stringify(info)
+
+    localStorage.setItem('info', data)
+
+    return info
+}
+
+const getinfo = () => {
+    const parsed = JSON.parse(localStorage.getItem('info'))
+
+    if (parsed) {
+        SettingsFname.value = parsed.fname
+        SettingsLname.value = parsed.lname
+        SettingsAddress.value = parsed.address
+        SettingsZipcode.value = parsed.zipcode
+        SettingsID.value = parsed.settingsID
+    }
+}
+
+
+
+SettingsInfoSubmit.addEventListener('click', (e) => {
+    saveInfo()
+})
 
 /* =========================
    LOAD ON START
 ========================= */
 document.addEventListener('DOMContentLoaded', importTasks)
 document.addEventListener('DOMContentLoaded', importbookMarks)
+document.addEventListener('DOMContentLoaded', getinfo)
+
 
