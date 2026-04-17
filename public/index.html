@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks</title>
+    <script src="https://c.vazirweb.ir/cdn/tailwind/3.4.10/tailwind.play.min.js"></script>
+    <link rel="stylesheet" href="https://c.vazirweb.ir/cdn/toastify/1.12.0/toastify.min.css">
+    <script src="https://c.vazirweb.ir/cdn/toastify/1.12.0/toastify.min.js"></script>
+    <style>
+        /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); */
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+
+        .task {
+            animation: slideIn 0.3s ease forwards;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.875rem;
+            font-weight: 500;
+            gap: 0.75rem;
+        }
+
+        .task:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .li-done {
+            background-color: rgb(22 255 117 / 16%);
+            animation: slideIn 1.5s ease forwards;
+            transition: all 0.5s;
+            text-decoration: red line-through;
+        }
+
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-del {
+            background: rgba(239, 68, 68, 0.1);
+            color: rgb(252, 165, 165);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+
+
+        .btn-done {
+            background: rgba(68, 239, 111, 0.1);
+            color: rgb(165, 252, 177);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+
+        .btn-done:hover {
+            background: rgba(74, 239, 68, 0.3);
+            border-color: rgba(68, 239, 91, 0.5);
+            transform: scale(1.08);
+        }
+
+
+        .btn-del:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.5);
+            transform: scale(1.08);
+        }
+
+        .btn-parent-div button {
+            margin-right: 10px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgb(139, 92, 246);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+
+        .bookmark-li {
+            animation: slideIn 0.5s;
+
+        }
+
+        .visible {
+
+            animation: popup .5s linear;
+        }
+
+        .hidden {
+
+            animation: popupClose 1s forwards;
+        }
+
+        @keyframes popup {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes popupClose {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center p-4">
+
+    <div class="w-full max-w-lg mt-10">
+
+        <nav>
+            <ul>
+                <div class="fixed top-6 right-6 flex gap-4 z-10">
+                    <button id="openModal" onclick="openModal('dashboardModal')"
+                        class="glass p-3 rounded-full text-white hover:scale-110 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                    </button>
+                    <button onclick="openModal('settingsModal')"
+                        class="glass p-3 rounded-full text-white hover:scale-110 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </ul>
+        </nav>
+
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center gap-2 mb-2">
+                <span class="pulse-dot w-2 h-2 bg-violet-400 rounded-full inline-block"></span>
+                <span class="text-violet-300 text-xs font-medium uppercase tracking-widest">Productivity</span>
+            </div>
+            <h1 class="text-white text-4xl font-bold tracking-tight">My Tasks</h1>
+            <p class="text-white/30 text-sm mt-1">Stay organized. Stay ahead.</p>
+        </div>
+
+        <!-- Card -->
+        <div class="glass rounded-3xl p-6 shadow-2xl">
+
+            <!-- Form -->
+            <form action="" id="taskform" class="flex gap-3 mb-6">
+                <div class="relative flex-1">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </span>
+                    <input type="text" id="taskinput" placeholder="Add a new task..." autocomplete="off"
+                        class="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl pl-10 pr-4 py-3 transition-all duration-200" />
+                </div>
+                <button type="submit" id="tasksubmit"
+                    class="bg-violet-600 hover:bg-violet-500 active:scale-95 text-white font-semibold text-sm px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-violet-900/50 whitespace-nowrap cursor-pointer">
+                    Add Task
+                </button>
+                <button id="clearTasks"
+                    class="bg-red-600 hover:bg-yellow-500 active:scale-95 text-white font-semibold text-sm px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-violet-900/50 whitespace-nowrap cursor-pointer">Clear</button>
+            </form>
+
+            <!-- Divider -->
+            <div class="flex items-center gap-3 mb-4">
+                <div class="flex-1 h-px bg-white/10"></div>
+                <span class="text-white/25 text-xs font-medium">tasks</span>
+                <div class="flex-1 h-px bg-white/10"></div>
+            </div>
+
+            <!-- Tasks List -->
+            <ul id="taskslist" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1">
+            </ul>
+
+        </div>
+
+        <p class="text-center text-white/15 text-xs mt-6">Built with ♥ to keep you on track</p>
+
+        <div id="modal" class="glass fixed bg-black/60 flex inset-0 items-center justify-center z-50">
+            <button id="closeModal"
+                class="absolute top-20 right-20 text-2xl text-white/50 hover:text-white hover:scale-110 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 6L6 18M6 6l12 12" />
+                </svg>
+            </button>
+            <div class=" glass bg-black/10 p-20 rounded-3xl">
+                <h1 class="text-white text-2xl py-2 my-2">📚Bookmarks</h1>
+                <div class="h-px w-100 bg-white/60"></div>
+                <div class="flex flex-row gap-5">
+                    <div class="flex flex-col">
+                        <input type="text" id="bookmarkName" placeholder="A new bookmark?" autocomplete="off"
+                            class="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl pl-10 pr-4 py-3 transition-all duration-200 my-5" />
+                        <input type="text" id="bookmarkLink" placeholder="Link..." autocomplete="off"
+                            class="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl pl-10 pr-4 py-3 transition-all duration-200" />
+                    </div>
+                    <button id="bookmarkBtn" class="rounded-3xl"><svg xmlns="http://www.w3.org/2000/svg"
+                            class="glass w-7 h-7 bg-white rounded-lg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M12 5v14m7-7H5" />
+                        </svg>
+                    </button>
+
+                </div>
+
+                <ul id="bookmarkList" class="flex flex-col my-5">
+                </ul>
+            </div>
+        </div>
+
+        <div id="settings" class="glass fixed bg-black/60 flex inset-0 items-center justify-center z-50">
+            <button id="closeSettings"
+                class="absolute top-20 right-20 text-2xl text-white/50 hover:text-white hover:scale-110 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 6L6 18M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="flex w-full md:w-1/2 sm:w-1/2 h-1/2">
+
+                <div class="glass bg-black/10 p-20 rounded-3xl w-full">
+                    <ul class="flex flex-col gap-10 absolute left-5 top-10">
+                        <li class="bg-white/10 rounded-lg p-3 text-white md:text-4xl sm:text-4xl bg-red">Theme</li>
+                        <li class="bg-white/10 rounded-lg p-3 text-white md:text-4xl sm:text-4xl ">Account</li>
+                        <li class="bg-white/10 rounded-lg p-3 text-white md:text-4xl sm:text-4xl ">Updates</li>
+                    </ul>
+
+                    <div class="flex justify-center flex-col items-center gap-10 mx-10">
+
+                        <h1 class="text-white text-2xl">Choose your favorite ✨</h1>
+                        <div class="flex flex-row gap-5">
+                            <button type="submit" id=""
+                                class="bg-violet-600 hover:bg-violet-500 active:scale-95 text-white font-semibold text-sm px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-violet-900/50 whitespace-nowrap cursor-pointer">Sky</button>
+                            <button type="submit" id=""
+                                class="bg-violet-600 hover:bg-violet-500 active:scale-95 text-white font-semibold text-sm px-5 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-violet-900/50 whitespace-nowrap cursor-pointer">Sun</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <script src="https://c.vazirweb.ir/cdn/axios/1.13.6/axios.min.js"></script>
+        <script src="./script.js"></script>
+</body>
+
+</html>
