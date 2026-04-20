@@ -9,6 +9,7 @@ const bookmarkBtn = document.getElementById('bookmarkBtn')
 const bookmarkName = document.getElementById('bookmarkName')
 const bookmarkLink = document.getElementById('bookmarkLink')
 const bookmarkList = document.getElementById('bookmarkList')
+const datepicker = document.getElementById('datepicker');
 
 /* =========================
    GET TASKS
@@ -20,10 +21,13 @@ const getTasks = () => {
     items.forEach(li => {
         const text = li.querySelector('.task-text').textContent.trim()
         const done = li.classList.contains('li-done')
+        const date = li.querySelector('.task-date')?.textContent || null
 
         tasks.push({
             task: text,
-            done: done
+            done: done,
+            date: date,
+            createdAt: new Date().toISOString()
         })
     })
 
@@ -37,10 +41,42 @@ const saveTasks = (tasks) => {
     localStorage.setItem('tasks', JSON.stringify(tasks))
 }
 
+// Date formatting 
+
+const formatRelativeDate = (dateString) => {
+    if (!dateString) return ''
+
+    const now = new Date()
+    const target = new Date(dateString)
+
+    // Remove time to avoid timezone issues
+    now.setHours(0, 0, 0, 0)
+    target.setHours(0, 0, 0, 0)
+
+    const diffMs = target - now
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffDays === 0) return 'Today'
+    if (diffDays === 1) return 'Tomorrow'
+    if (diffDays === -1) return 'Yesterday'
+
+    if (Math.abs(diffDays) < 31)
+        return diffDays > 0 ? `In ${diffDays} days` : `${Math.abs(diffDays)} days ago`
+
+    const diffMonths = Math.round(diffDays / 30)
+
+    if (Math.abs(diffMonths) < 12)
+        return diffMonths > 0 ? `In ${diffMonths} months` : `${Math.abs(diffMonths)} months ago`
+
+    const diffYears = Math.round(diffMonths / 12)
+    return diffYears > 0 ? `In ${diffYears} years` : `${Math.abs(diffYears)} years ago`
+}
+
+
 /* =========================
    CREATE TASK ELEMENT
 ========================= */
-const createTaskElement = (text, isDone = false) => {
+const createTaskElement = (text, date = null, isDone = false) => {
     const task = document.createElement('li')
     task.classList.add('task')
     if (isDone) task.classList.add('li-done')
@@ -51,6 +87,12 @@ const createTaskElement = (text, isDone = false) => {
 
     const btnParent = document.createElement('div')
     btnParent.classList.add('btn-parent-div')
+
+    const datelabel = document.createElement('span');
+
+    datelabel.classList.add('task-date')
+
+    datelabel.textContent = date ? formatRelativeDate(date) : ''
 
     /* DONE BUTTON */
     const doneBtn = document.createElement('button')
@@ -79,12 +121,11 @@ const createTaskElement = (text, isDone = false) => {
         li.remove()
         saveTasks(getTasks())
     })
-
+    task.appendChild(span)
     btnParent.appendChild(doneBtn)
     btnParent.appendChild(delBtn)
-
-    task.appendChild(span)
     task.appendChild(btnParent)
+    task.appendChild(datelabel);
 
     return task
 }
@@ -99,10 +140,11 @@ const importTasks = () => {
     const parsed = JSON.parse(data)
 
     parsed.forEach(taskObj => {
-        const taskElement = createTaskElement(taskObj.task, taskObj.done)
+        const taskElement = createTaskElement(taskObj.task, taskObj.date, taskObj.done)
         TasksList.appendChild(taskElement)
     })
 }
+
 
 /* =========================
    ADD TASK
@@ -115,7 +157,7 @@ FormSubmit.addEventListener('click', (e) => {
         return
     }
 
-    const taskElement = createTaskElement(FormInput.value)
+    const taskElement = createTaskElement(FormInput.value, datepicker.value)
     TasksList.appendChild(taskElement)
 
     FormInput.value = ''
